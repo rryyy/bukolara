@@ -83,6 +83,7 @@ class PostController extends Controller
   //   		$register_category->category_confidence = $category['confidence'];
 		// 	$register_category->save();
 		// }
+		// return response()->json(['post' => $register, 'entity' => $register_entity, 'category' => $register_category]);
 		return $register;
     }  	
     public function AllPosts(Request $request)
