@@ -60,30 +60,30 @@ class PostController extends Controller
 		$register->magnitude = $magnitude;
 		$register->save();
 		# Call the analyzeEntities function
-    	$response = $language->analyzeEntitySentiment($res['text']);
-    	$info = $response->info();
-    	$entities = $info['entities'];
-	    foreach ($entities as $entity) {
-	    	$register_entity = new Entity;
-	    	$register_entity->post_id = $register->id;
-	    	$register_entity->entity_name = $entity['name'];
-	    	$register_entity->entity_type = $entity['type'];
-	        $register_entity->entity_salience = $entity['salience'];
-	        $register_entity->entity_senti_score = $entity['sentiment']['score'];
-	        $register_entity->entity_senti_magnitude = $entity['sentiment']['magnitude'];
-	        $register_entity->save();
-	    }
-	    # Call the classifyText function
-	    $response = $language->classifyText($res['text']);
-    	$categories = $response->categories();
-    	foreach ($categories as $category) {
-    		$register_category = new Category;
-    		$register_category->post_id = $register->id;
-    		$register_category->category_name = $category['name'];
-    		$register_category->category_confidence = $category['confidence'];
-			$register_category->save();
-		}
-		return response()->json(['post' => $register, 'entity' => $register_entity, 'category' => $register_category]);
+  //   	$response = $language->analyzeEntitySentiment($res['text']);
+  //   	$info = $response->info();
+  //   	$entities = $info['entities'];
+	 //    foreach ($entities as $entity) {
+	 //    	$register_entity = new Entity;
+	 //    	$register_entity->post_id = $register->id;
+	 //    	$register_entity->entity_name = $entity['name'];
+	 //    	$register_entity->entity_type = $entity['type'];
+	 //        $register_entity->entity_salience = $entity['salience'];
+	 //        $register_entity->entity_senti_score = $entity['sentiment']['score'];
+	 //        $register_entity->entity_senti_magnitude = $entity['sentiment']['magnitude'];
+	 //        $register_entity->save();
+	 //    }
+	 //    # Call the classifyText function
+	 //    $response = $language->classifyText($res['text']);
+  //   	$categories = $response->categories();
+  //   	foreach ($categories as $category) {
+  //   		$register_category = new Category;
+  //   		$register_category->post_id = $register->id;
+  //   		$register_category->category_name = $category['name'];
+  //   		$register_category->category_confidence = $category['confidence'];
+		// 	$register_category->save();
+		// }
+		return $register;
     }  	
     public function AllPosts(Request $request)
     {
