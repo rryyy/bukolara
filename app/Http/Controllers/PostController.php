@@ -97,24 +97,12 @@ class PostController extends Controller
 		}])->latest()->skip($skip)->take($take)->get();
         return $post;
     }
-    public function Postss(Request $request)
-    {
-    	$id = $request->id;
-        $post = Post::with('user')->withCount('likes','comments')->withCount(['like' => function ($query) use ($id) {
-		    $query->where('user_id', '=', $id);
-		}])->withCount(['comment' => function ($query) use ($id) {
-		    $query->where('user_id', '=', $id);
-		}])->latest()->get();
-        return $post;
-    }
     public function UserPost(Request $request)
     {
     	$id = $request->id;
-    	$take = $request->limit;
-    	$skip = $request->offset;
-        $post = Post::with('user')->where('user_id', $id)->withCount('likes','comments')->withCount(['like','comment' => function ($query) use ($id, $take, $skip) {
+        $post = Post::with('user')->where('user_id', $id)->withCount('likes','comments')->withCount(['like','comment' => function ($query) use ($id) {
 		    $query->where('user_id', '=', $id);
-		}])->latest()->skip($skip)->take($take)->get();
+		}])->latest()->get();
         return $post;
     }
     public function Analytics(Request $request)
@@ -167,5 +155,10 @@ class PostController extends Controller
             'tnvsPercentage' => number_format($tnvsPercentage, 2, '.', ',')
             )
         ]);
+    }
+    public function test()
+    {
+    	$post = Post::with('user')->where('user_id', '$id')->get();
+    	return $post;
     }
 }
