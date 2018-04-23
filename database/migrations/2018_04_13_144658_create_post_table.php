@@ -23,7 +23,7 @@ class CreatePostTable extends Migration
             $table->string('content');
             $table->string('feelings_title')->nullable();
             $table->string('feelings_uri')->nullable();
-            $table->string('image')->nullable();
+            $table->longtext('image')->nullable();
             $table->string('translated');
             $table->string('sentiment_score');
             $table->string('sentiment');
