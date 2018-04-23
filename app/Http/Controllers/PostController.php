@@ -26,7 +26,7 @@ class PostController extends Controller
 		// # Instantiates a client
 		$language = new LanguageClient([
 			'projectId' => $projectId,
-		    'keyFilePath' => storage_path('app/BuKo-6e7f5c5e0c75.json')
+		    'keyFilePath' => storage_path('app/BuKo.json')
 		]);
 		# Detects the sentiment of the text
 		$annotation = $language->analyzeSentiment($res['text']);
