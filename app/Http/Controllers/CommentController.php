@@ -25,7 +25,7 @@ class CommentController extends Controller
 		// # Instantiates a client
 		$language = new LanguageClient([
 			'projectId' => $projectId,
-		    'keyFilePath' => storage_path('app/BuKo-6e7f5c5e0c75.json')
+		    'keyFilePath' => storage_path('app/BuKo.json')
 		]);
 		// $text = 'Fuck you!';
 		# Detects the sentiment of the text

@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('birthday');
             $table->string('gender');
             $table->string('password');
-            $table->string('displayphoto');
+            $table->longtext('displayphoto');
             $table->rememberToken();
             $table->timestamps();
         });
