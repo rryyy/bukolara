@@ -7,9 +7,11 @@ use Google\Cloud\Translate\TranslateClient;
 use Google\Cloud\Language\LanguageClient;
 use Storage;
 use App\Post;
+use App\User;
 use App\Like;
 use App\Entity;
 use App\Category;
+use App\Boost;
 class PostController extends Controller
 {
     //
@@ -58,7 +60,9 @@ class PostController extends Controller
 		$register->sentiment_score = $sentiment_score;
 		$register->sentiment = $sentiment;
 		$register->magnitude = $magnitude;
+        $register->company = $request->bus_company;
 		$register->save();
+        return response()->json(['status' => '200','last_insert_id' => $register->id]);
 		// Call the analyzeEntities function
     	$response = $language->analyzeEntitySentiment($res['text']);
     	$info = $response->info();
@@ -83,26 +87,44 @@ class PostController extends Controller
     		$register_category->category_confidence = $category['confidence'];
 			$register_category->save();
 		}
-		return response()->json(['post' => $register, 'entity' => $register_entity, 'category' => $register_category]);
+		
     }  	
     public function AllPosts(Request $request)
     {
     	$id = $request->id;
     	$take = $request->limit;
     	$skip = $request->offset;
-        $post = Post::with('user')->withCount('likes','comments')->withCount(['like' => function ($query) use ($id, $take, $skip) {
+        $post = Post::with('user')->withCount('likes','comments','boosts')->withCount(['like' => function ($query) use ($id, $take, $skip) {
 		    $query->where('user_id', '=', $id);
 		}])->withCount(['comment' => function ($query) use ($id, $take, $skip) {
 		    $query->where('user_id', '=', $id);
-		}])->latest()->skip($skip)->take($take)->get();
+		}])->withCount(['boost' => function ($query) use ($id, $take, $skip) {
+            $query->where('user_id', '=', $id);
+        }])->latest()->skip($skip)->take($take)->get();
         return $post;
     }
+    // public function AllPostsNolimit(Request $request)
+    // {
+    //     $id = '1';
+    //     $post = Post::with('user')->withCount('likes','comments')->withCount(['like' => function ($query) use ($id) {
+    //         $query->where('user_id', '=', $id);
+    //     }])->withCount(['comment' => function ($query) use ($id) {
+    //         $query->where('user_id', '=', $id);
+    //     }])->latest()->get();
+    //     return $post;
+    // }
     public function UserPost(Request $request)
     {
-    	$id = $request->id;
+        $id = $request->id;
+        $take = $request->limit;
+        $skip = $request->offset;
         $post = Post::with('user')->where('user_id', $id)->withCount('likes','comments')->withCount(['like','comment' => function ($query) use ($id) {
 		    $query->where('user_id', '=', $id);
-		}])->latest()->get();
+        }])->withCount(['comment' => function ($query) use ($id, $take, $skip) {
+            $query->where('user_id', '=', $id);
+        }])->withCount(['boost' => function ($query) use ($id, $take, $skip) {
+            $query->where('user_id', '=', $id);
+        }])->latest()->skip($skip)->take($take)->get();
         return $post;
     }
     public function Analytics(Request $request)
@@ -160,5 +182,63 @@ class PostController extends Controller
     {
     	$post = Post::with('user')->where('user_id', '$id')->get();
     	return $post;
+    }
+    public function SimilarPost(Request $request)
+    {
+        $id = $request->id;
+        $puv = $request->puv;
+        $take = $request->limit;
+        $skip = $request->offset;
+        $similarpost = Post::with('user')->withCount('likes','comments')->withCount(['like' => function ($query) use ($id, $puv) {
+            $query->where('user_id', '=', $id);
+        }])->withCount(['comment' => function ($query) use ($id, $puv) {
+            $query->where('user_id', '=', $id);
+        }])->withCount(['boost' => function ($query) use ($id, $take, $skip) {
+            $query->where('user_id', '=', $id);
+        }])->where('body_plate_no', 'LIKE', '%' .$puv. '%')->latest()->skip($skip)->take($take)->get();
+        return $similarpost;
+    }
+    //web routes
+    public function testboosted()
+    {
+        // $post = Boost::with('user','post')->withCount('user')->latest()->get();
+        $post = Post::with('user','boost')->withCount('boosts')->orderBy('boosts_count', 'desc')->get();
+        return $post;
+    }
+    public function testpositive()
+    {
+        $post = Post::with('user')->withCount('likes','comments','boosts')->where('sentiment', 'positive')->latest()->get();
+        return $post;
+    }
+    public function testnegative()
+    {
+         $post = Post::with('user')->withCount('likes','comments','boosts')->where('sentiment', 'negative')->latest()->get();
+        return $post;       
+    }
+    public function testneutral()
+    {
+         $post = Post::with('user')->withCount('likes','comments','boosts')->where('sentiment', 'neutral')->latest()->get();
+        return $post;       
+    }
+    public function testallpost()
+    {
+        $post = Post::with('user')->withCount('likes','comments','boosts')->latest()->get();
+        return $post;       
+    }
+   public function Count()
+    {
+        $usercount = User::all()->count();
+        $poscount = Post::where('sentiment','positive')->get()->count();
+        $negcount = Post::where('sentiment','negative')->get()->count();
+        $neucount = Post::where('sentiment','neutral')->get()->count();
+        return response()->json([
+            $counts = array(
+                'usercount' => $usercount, 
+                'poscount' => $poscount, 
+                'negcount' => $negcount, 
+                'neucount' => $neucount
+            )
+        ]);
+        return $counts;
     }
 }

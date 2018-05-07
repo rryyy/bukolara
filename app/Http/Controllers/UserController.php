@@ -55,4 +55,9 @@ class UserController extends Controller
         $logg = User::where('id',$request->id)->get();
         return $logg;
     }
+    public function testalluser()
+    {
+         $users = User::orderBy('created_at', 'desc')->get();
+        return $users;       
+    }
 }

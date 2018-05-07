@@ -26,4 +26,7 @@ Route::post('/addcomment', 'CommentController@index');
 Route::post('/viewcomment', 'CommentController@view');
 Route::post('/userpost', 'PostController@UserPost');
 Route::post('/analytics', 'PostController@Analytics');
+Route::post('/boostpost', 'BoostController@BoostPost');
+Route::post('/similar', 'PostController@SimilarPost');
+Route::post('/donate', 'DonateController@Donate');
 Route::get('/test', 'PostController@test');

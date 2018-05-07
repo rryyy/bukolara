@@ -28,4 +28,12 @@ class Post extends Model
     {
         return $this->hasMany('App\Comment');
     }
+    public function boosts()
+    {
+        return $this->hasMany('App\Boost');
+    }
+    public function boost()
+    {
+        return $this->hasMany('App\Boost');
+    }
 }
