@@ -61,6 +61,7 @@ class PostController extends Controller
 		$register->sentiment = $sentiment;
 		$register->magnitude = $magnitude;
         $register->company = $request->bus_company;
+        $register->direct = $request->direct;
 		$register->save();
         return response()->json(['status' => '200','last_insert_id' => $register->id]);
 		// Call the analyzeEntities function
